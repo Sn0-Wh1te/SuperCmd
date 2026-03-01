@@ -5,7 +5,6 @@ import {
   Calculator,
   Check,
   Clipboard,
-  ExternalLink,
   FileText,
   FolderOpen,
   Keyboard,
@@ -59,8 +58,8 @@ const permissionTargets: Array<{
 }> = [
   {
     id: 'home-folder',
-    title: 'Home Folder (File Search)',
-    description: 'Required to index files in Documents, Desktop, and Downloads.',
+    title: 'Home Folder',
+    description: 'Required for file search.',
     url: 'x-apple.systempreferences:com.apple.preference.security?Privacy_FilesAndFolders',
     icon: FolderOpen,
     iconTone: 'text-blue-100',
@@ -87,7 +86,7 @@ const permissionTargets: Array<{
   {
     id: 'speech-recognition',
     title: 'Speech Recognition',
-    description: 'Required for native speech recognition used by default in Whisper.',
+    description: 'Required for native speech recognition.',
     url: 'x-apple.systempreferences:com.apple.preference.security?Privacy_SpeechRecognition',
     icon: Volume2,
     iconTone: 'text-emerald-100',
@@ -96,7 +95,7 @@ const permissionTargets: Array<{
   {
     id: 'microphone',
     title: 'Microphone',
-    description: 'Required for SuperCmd Whisper dictation.',
+    description: 'Required for SuperCmd Whisper Dictation.',
     url: 'x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone',
     icon: Mic,
     iconTone: 'text-cyan-100',
@@ -733,6 +732,7 @@ const OnboardingExtension: React.FC<OnboardingExtensionProps> = ({
                     const isDone = Boolean(openedPermissions[target.id]);
                     const isRequested = Boolean(requestedPermissions[target.id]);
                     const note = permissionNotes[target.id];
+                    const permissionNoteClass = 'mt-1 pl-[60px] text-[11px]';
                     return (
                       <div
                         key={target.id}
@@ -779,32 +779,26 @@ const OnboardingExtension: React.FC<OnboardingExtensionProps> = ({
                             disabled={Boolean(permissionLoading[target.id])}
                             className="inline-flex justify-center items-center gap-1.5 px-3 py-2 rounded-md border border-white/[0.12] bg-white/[0.10] hover:bg-white/[0.18] text-white text-xs font-medium transition-colors disabled:opacity-60 md:min-w-[190px]"
                           >
-                            {permissionLoading[target.id] ? 'Requesting...' : 'Request + Open Settings'}
-                            <ExternalLink className="w-3 h-3" />
+                            {permissionLoading[target.id] ? 'Requesting...' : 'Request Access'}
                           </button>
                         </div>
                         {!isDone && isRequested ? (
-                          <p className="mt-2 text-[11px] text-amber-100/85">
+                          <p className={`${permissionNoteClass} text-amber-100/85`}>
                             Permission request sent. Enable SuperCmd in System Settings, then return.
                           </p>
                         ) : null}
-                        {!isDone && (target.id === 'microphone' || target.id === 'speech-recognition') ? (
-                          <p className="mt-1 text-[11px] text-white/52">
-                            If this opens Privacy & Security, select the matching access row and press request again.
-                          </p>
-                        ) : null}
                         {target.id === 'input-monitoring' ? (
-                          <p className="mt-1 text-[11px] text-amber-700 dark:text-amber-100/85">
+                          <p className={`${permissionNoteClass} text-amber-700 dark:text-amber-100/85`}>
                             If SuperCmd is not visible here, click + and manually add SuperCmd from the Applications folder.
                           </p>
                         ) : null}
                         {target.id === 'home-folder' ? (
-                          <p className="mt-1 text-[11px] text-white/52">
+                          <p className={`${permissionNoteClass} text-white/52`}>
                             Pick your Home folder when prompted. This powers Search Files and launcher file results.
                           </p>
                         ) : null}
                         {!isDone && note ? (
-                          <p className="mt-1 text-[11px] text-rose-100/85">
+                          <p className={`${permissionNoteClass} text-rose-100/85`}>
                             {note}
                           </p>
                         ) : null}

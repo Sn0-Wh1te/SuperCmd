@@ -431,7 +431,7 @@ const App: React.FC = () => {
         }, {} as Record<string, string>)
       );
       setLauncherShortcut(settings.globalShortcut || 'Alt+Space');
-      const speakToggleHotkey = settings.commandHotkeys?.['system-supercmd-whisper-speak-toggle'] || 'Fn';
+      const speakToggleHotkey = settings.commandHotkeys?.['system-supercmd-whisper-speak-toggle'] ?? '';
       setWhisperSpeakToggleLabel(formatShortcutLabel(speakToggleHotkey));
       setConfiguredEdgeTtsVoice(String(settings.ai?.edgeTtsVoice || 'en-US-EricNeural'));
       setConfiguredTtsModel(String(settings.ai?.textToSpeechModel || 'edge-tts'));
@@ -2608,7 +2608,7 @@ const App: React.FC = () => {
           onboardingCaptureMode={showWhisperOnboarding}
           onOnboardingTranscriptAppend={appendWhisperOnboardingPracticeText}
           coachmarkText={
-            showWhisperHint
+            showWhisperHint && whisperSpeakToggleLabel
               ? `Whisper sits here. Hold ${whisperSpeakToggleLabel} to talk, release to type.`
               : undefined
           }

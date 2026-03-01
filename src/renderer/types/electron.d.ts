@@ -197,10 +197,6 @@ export interface AppSettings {
   uiStyle: 'default' | 'glassy';
   baseColor: string;
   appUpdaterLastCheckedAt: number;
-  hyperKeySource: number | null;
-  hyperKeyIncludeShift: boolean;
-  hyperKeyQuickPressAction: 'toggle-caps-lock' | 'escape' | 'none';
-  hyperReplaceModifierGlyphsWithHyper: boolean;
 }
 
 export interface CatalogEntry {

@@ -179,8 +179,8 @@ const OnboardingExtension: React.FC<OnboardingExtensionProps> = ({
 
   useEffect(() => {
     window.electron.getSettings().then((settings) => {
-      const saved = String(settings.commandHotkeys?.['system-supercmd-whisper-speak-toggle'] || 'Fn').trim();
-      setWhisperHoldKey(saved || 'Fn');
+      const saved = String(settings.commandHotkeys?.['system-supercmd-whisper-speak-toggle'] ?? '').trim();
+      setWhisperHoldKey(saved);
       const savedLanguage = String(settings.ai?.speechLanguage || 'en-US').trim();
       setSpeechLanguage(savedLanguage || 'en-US');
     }).catch(() => {});
@@ -380,7 +380,7 @@ const OnboardingExtension: React.FC<OnboardingExtensionProps> = ({
 
   const stepTitle = useMemo(() => STEPS[step] || STEPS[0], [step]);
   const hotkeyCaps = useMemo(() => toHotkeyCaps(shortcut || 'Alt+Space'), [shortcut]);
-  const whisperKeyCaps = useMemo(() => toHotkeyCaps(whisperHoldKey || 'Fn'), [whisperHoldKey]);
+  const whisperKeyCaps = useMemo(() => toHotkeyCaps(whisperHoldKey), [whisperHoldKey]);
 
   const handleShortcutChange = async (nextShortcut: string) => {
     setShortcutStatus('idle');
@@ -402,7 +402,7 @@ const OnboardingExtension: React.FC<OnboardingExtensionProps> = ({
   };
 
   const handleWhisperKeyChange = async (nextShortcut: string) => {
-    const target = nextShortcut || 'Fn';
+    const target = nextShortcut;
     setWhisperKeyStatus('idle');
     setWhisperHoldKey(target);
     const result = await window.electron.updateCommandHotkey('system-supercmd-whisper-speak-toggle', target);

@@ -3971,8 +3971,8 @@ function normalizeAccelerator(shortcut: string): string {
     fn: false,
   };
 
-  // Hyper support temporarily disabled. Keep raw accelerator to avoid
-  // accidentally downgrading "Hyper+X" to plain "X".
+  // Preserve legacy shortcuts with an unsupported "Hyper" modifier instead
+  // of accidentally downgrading them to plain keys.
   const hasHyper = modifierTokens.some((token) => token === 'hyper' || token === '✦');
   if (hasHyper) {
     return raw;
@@ -6426,7 +6426,7 @@ async function runCommandById(commandId: string, source: 'launcher' | 'hotkey' |
   }
 
   if (isWhisperSpeakToggleCommand) {
-    const speakToggleHotkey = String(loadSettings().commandHotkeys?.['system-supercmd-whisper-speak-toggle'] || 'Fn');
+    const speakToggleHotkey = String(loadSettings().commandHotkeys?.['system-supercmd-whisper-speak-toggle'] ?? '').trim();
     const holdSeq = ++whisperHoldRequestSeq;
     if (whisperOverlayVisible) {
       captureFrontmostAppContext();
@@ -6436,11 +6436,15 @@ async function runCommandById(commandId: string, source: 'launcher' | 'hotkey' |
         const pos = computeDetachedPopupPosition(DETACHED_WHISPER_WINDOW_NAME, bounds.width, bounds.height);
         whisperChildWindow.setPosition(pos.x, pos.y);
       }
-      startWhisperHoldWatcher(speakToggleHotkey, holdSeq);
+      if (speakToggleHotkey) {
+        startWhisperHoldWatcher(speakToggleHotkey, holdSeq);
+      }
       mainWindow?.webContents.send('whisper-start-listening');
       return true;
     }
-    startWhisperHoldWatcher(speakToggleHotkey, holdSeq);
+    if (speakToggleHotkey) {
+      startWhisperHoldWatcher(speakToggleHotkey, holdSeq);
+    }
     await openLauncherAndRunSystemCommand('system-supercmd-whisper', {
       showWindow: false,
       mode: launcherMode === 'onboarding' ? 'onboarding' : 'default',
@@ -8834,15 +8838,6 @@ app.whenReady().then(async () => {
       if (patch.openAtLogin !== undefined) {
         applyOpenAtLogin(Boolean(patch.openAtLogin));
       }
-      // Hyper runtime wiring is temporarily disabled.
-      // if (patch.hyperKeyIncludeShift !== undefined) {
-      //   try {
-      //     registerGlobalShortcut(result.globalShortcut);
-      //   } catch {}
-      //   try {
-      //     registerCommandHotkeys(result.commandHotkeys);
-      //   } catch {}
-      // }
       // When onboarding completes: hide dock, then start services that were
       // deferred to avoid triggering permission dialogs during onboarding.
       if (patch.hasSeenOnboarding === true) {
@@ -9021,7 +9016,7 @@ app.whenReady().then(async () => {
           return { success: false, error: 'unavailable' as const };
         }
       } else {
-        delete hotkeys[commandId];
+        hotkeys[commandId] = '';
       }
 
       saveSettings({ commandHotkeys: hotkeys });
